@@ -357,8 +357,7 @@ Reference
 
 ---
 
-screenshot
-![screensh](./tabel.png)
+<img src="./table.png">
 
 
 *Think of Geometric Series. If the geometric ratio is less than 1, then the geometric series must be less than 1. As a result, We can get profits of distance by changing search algorithm.
