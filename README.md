@@ -1,7 +1,7 @@
 # Auto Focus Algorithm 🦄
 
 ---
-
+ 
 - Background
 - Hill-climbing Search
 - Code Review
