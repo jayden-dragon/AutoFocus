@@ -130,8 +130,10 @@ func (s *Set_AF) Auto_focus() IP_STATE {
 	var ( // initialize variables
 		ip_state IP_STATE = IP_NOT_FOUND // state of image processing
 
-		prac_step int64 = s.step - slope_step // practical len of step considering slope
+		dir int = -1
+
 		move_step int64 = s.step              // real len of step
+		prac_step int64 = s.step - slope_step // practical len of step considering slope
 	)
 
 	start := time.Now() // start to count
@@ -146,15 +148,26 @@ func (s *Set_AF) Auto_focus() IP_STATE {
 
 		// Initialize & first-time
 		if frame_cnt == 0 {
-			dir = -1
 			af_info = make([]__AF, 15)
 			af_slope_info = make([]__AF, 15)
 
 			motor.ActivateToPos(0, 0, 0, s.start)
 
+			if s.start < 400 {
+				dir = 1
+			} else {
+				dir = -1
+			}
+
 			getPoint()
 
 			past_slope = calSlope(af_info[frame_cnt].mean, af_slope_info[frame_cnt].mean)
+
+			if past_slope > 0 {
+				dir = 1
+			} else {
+				dir = -1
+			}
 
 			motor.MoveAF(dir * (prac_step - slope_step))
 			time.Sleep(20 * time.Millisecond)
@@ -172,10 +185,18 @@ func (s *Set_AF) Auto_focus() IP_STATE {
 		curr_slope = calSlope(af_info[frame_cnt].mean, af_slope_info[frame_cnt].mean)
 
 		// determining moving direction & moving step
-		if (past_slope > 0 && curr_slope < 0) || (past_slope < 0 && curr_slope > 0) {
-			dir = -dir
+		if past_slope > 0 && curr_slope > 0 {
+			dir = +1
+		} else if past_slope > 0 && curr_slope < 0 {
+			dir = -1
 			move_step = move_step / 2
 			prac_step = move_step - slope_step
+		} else if past_slope < 0 && curr_slope > 0 {
+			dir = +1
+			move_step = move_step / 2
+			prac_step = move_step - slope_step
+		} else if past_slope < 0 && curr_slope < 0 {
+			dir = -1
 		}
 
 		if (move_step / 2) < slope_step { // determining termination

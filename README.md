@@ -40,6 +40,10 @@ Reference
 
     **#Local search #Gradient ascent/descent #Parameter L #Motor steps #Local minima/maxima**
 
+- **Direction& Distance**
+	
+	<img src="./direction_distance.png">
+
 - **Code**
 
     ```go
