@@ -199,7 +199,8 @@ func (s *Set_AF) Auto_focus() IP_STATE {
 			dir = -1
 		}
 
-		if (move_step / 2) < slope_step { // determining termination
+		// determining termination
+		if (move_step / 2) < slope_step {
 			motor.MoveAF(dir * move_step)
 			ip_state = IP_SUCCESS
 			break
