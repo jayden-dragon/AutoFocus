@@ -159,7 +159,7 @@ func (s *Set_AF) Hill_climbing() IP_STATE {
 	turn_flag := 0
 	cnt := 0
 
-	var delay time.Duration = 500
+	var delay time.Duration = 500 // Motor - Image sync
 
 	// Auto-Focus start!!
 	for ip_state != IP_SUCCESS {
@@ -176,6 +176,7 @@ func (s *Set_AF) Hill_climbing() IP_STATE {
 
 			fmt.Println("AF init...")
 
+			//Move within the range
 			if curr_pos <= MIN {
 				motor.ActivateToPos(0, 0, 0, MIN)
 			} else if curr_pos >= MAX {
@@ -186,9 +187,11 @@ func (s *Set_AF) Hill_climbing() IP_STATE {
 
 			getPoint()
 
+			//Calculate the slope of starting point
 			past_slope = calSlope(af_info[frame_cnt].mean, af_slope_info[frame_cnt].mean, dir)
 			fmt.Println("first_slope : ", past_slope)
 
+			// Set first moving direction
 			if past_slope > 0 {
 				dir = 1
 				motor.MoveAF(dir * move_step)
@@ -227,13 +230,11 @@ func (s *Set_AF) Hill_climbing() IP_STATE {
 			delay = delay / 2
 
 			motor.MoveAF(dir * (move_step - slope_step))
-			time.Sleep(delay * time.Millisecond)
 			ip_state = IP_SUCCESS
 			break
 
 		} else if turn_flag == 2 && cnt == 0 {
 			motor.MoveAF(dir * (move_step + slope_step))
-			time.Sleep(delay * time.Millisecond)
 			ip_state = IP_SUCCESS
 			break
 			/*} else if turn_flag == 0 && (curr_pos+dir*move_step) > MAX {
